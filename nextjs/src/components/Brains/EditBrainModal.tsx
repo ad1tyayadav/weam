@@ -595,21 +595,21 @@ const EditBrainModal = ({ open, closeModal, brain }): any => {
                                 />
                                 {brain.title}
                             </DialogTitle>
-                            <div className='flex items-center'>
-                                <DialogDescription className="small-description text-font-14 max-md:text-font-12 leading-[24px] text-b5 font-normal ml-9">
-                                    <span className='mr-0.5'>Created By: </span>
-                                    {`${displayName(brain?.user)} on ${dateDisplay(
-                                        brain?.createdAt
-                                    )}`}
-                                </DialogDescription>
-                                <div className="ml-auto">
-                                    <AboutBrainDetails
-                                        brain={brain}
-                                        isOwner={isOwner}
-                                        onLeaveBrain={onLeaveBrain}
-                                        onDeleteBrain={onDeleteBrain}
-                                    />
-                                </div>
+                          <div className='flex items-center'>
+                          <DialogDescription className="small-description text-font-14 max-md:text-font-12 leading-[24px] text-b5 font-normal ml-9">
+                                        <span className='mr-0.5'>Created By: </span>
+                                        {`${displayName(brain?.user)} on ${dateDisplay(
+                                            brain?.createdAt
+                                        )}`}
+                            </DialogDescription>
+                            <div className="ml-auto">
+                                <AboutBrainDetails
+                                    brain={brain}
+                                    isOwner={isOwner}
+                                    onLeaveBrain={onLeaveBrain}
+                                    onDeleteBrain={onDeleteBrain}
+                                />
+                            </div>
                             </div>
                         </DialogHeader>
 
@@ -662,90 +662,90 @@ const EditBrainModal = ({ open, closeModal, brain }): any => {
                             </div>
 
                             {brain.isShare && (
-                                <>
-                                    <div className="flex w-full py-3 gap-3 md:flex-row flex-col">
-                                        <div className="search-wrap search-member relative flex-1 w-full">
-                                            <input
-                                                type="text"
-                                                className="default-form-input default-form-input-border-light default-form-input-md"
-                                                id="searchMember"
-                                                placeholder="Search Member"
-                                                onChange={(e) => {
-                                                    setTimeout(() => {
-                                                        setFilter({
-                                                            ...filter,
-                                                            search: e.target
-                                                                .value,
-                                                        });
-                                                    }, 1000);
-                                                }}
-                                            />
-                                            <span className="inline-block absolute left-[15px] top-1/2 -translate-y-1/2 [&>svg]:fill-b7">
-                                                <SearchIcon className="w-4 h-[17px] fill-b7" />
-                                            </span>
-                                        </div>
-                                        {/* Add Member start */}
-                                        {((currentUser.roleCode ===
-                                            ROLE_TYPE.USER &&
-                                            brain?.user?.id ===
+                                <>                                
+                                <div className="flex w-full py-3 gap-3 md:flex-row flex-col">
+                                    <div className="search-wrap search-member relative flex-1 w-full">
+                                        <input
+                                            type="text"
+                                            className="default-form-input default-form-input-border-light default-form-input-md"
+                                            id="searchMember"
+                                            placeholder="Search Member"
+                                            onChange={(e) => {
+                                                setTimeout(() => {
+                                                    setFilter({
+                                                        ...filter,
+                                                        search: e.target
+                                                            .value,
+                                                    });
+                                                }, 1000);
+                                            }}
+                                        />
+                                        <span className="inline-block absolute left-[15px] top-1/2 -translate-y-1/2 [&>svg]:fill-b7">
+                                            <SearchIcon className="w-4 h-[17px] fill-b7" />
+                                        </span>
+                                    </div>
+                                    {/* Add Member start */}
+                                    {((currentUser.roleCode ===
+                                        ROLE_TYPE.USER &&
+                                        brain?.user?.id ===
                                             currentUser._id) ||
                                             currentUser.roleCode !==
                                             ROLE_TYPE.USER) && (
-
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <div>
-                                                            <span
-                                                                className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
-                                                                onClick={() =>
-                                                                    setAddMemberModal(
-                                                                        true
-                                                                    )
-                                                                }
-                                                            >
-                                                                <AddUser
-                                                                    width={
-                                                                        16
-                                                                    }
-                                                                    height={
-                                                                        18
-                                                                    }
-                                                                    className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
-                                                                />
-                                                                <span className="text-font-14 font-semibold text-b2">
-                                                                    Add
-                                                                    Member
-                                                                </span>
-                                                            </span>
-
-                                                            <span
-                                                                className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
-                                                                onClick={() =>
-                                                                    setAddTeamModal(
-                                                                        true
-                                                                    )
-                                                                }
-                                                            >
-                                                                <AddTeam
-                                                                    width={
-                                                                        18
-                                                                    }
-                                                                    height={
-                                                                        18
-                                                                    }
-                                                                    className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
-                                                                />
-                                                                <span className="text-font-14 font-semibold text-b2">
-                                                                    Add a Team
-                                                                </span>
-                                                            </span>
-                                                        </div>
-                                                    </DialogTrigger>
-                                                </Dialog>
-
-                                            )}
-                                        {/* Add Member End */}
-                                    </div>
+                                
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <div>
+                                                    <span
+                                                        className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
+                                                        onClick={() =>
+                                                            setAddMemberModal(
+                                                                true
+                                                            )
+                                                        }
+                                                    >
+                                                        <AddUser
+                                                            width={
+                                                                16
+                                                            }
+                                                            height={
+                                                                18
+                                                            }
+                                                            className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
+                                                        />
+                                                        <span className="text-font-14 font-semibold text-b2">
+                                                            Add
+                                                            Member
+                                                        </span>
+                                                    </span>
+                                
+                                                    <span
+                                                        className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
+                                                        onClick={() =>
+                                                            setAddTeamModal(
+                                                                true
+                                                            )
+                                                        }
+                                                    >
+                                                        <AddTeam
+                                                            width={
+                                                                18
+                                                            }
+                                                            height={
+                                                                18
+                                                            }
+                                                            className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
+                                                        />
+                                                        <span className="text-font-14 font-semibold text-b2">
+                                                            Add a Team
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </DialogTrigger>
+                                        </Dialog>
+                                        
+                                    )}
+                                {/* Add Member End */}
+                                </div>
 
                                     <div
                                         className="font-normal"
