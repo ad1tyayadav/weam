@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/config/withSession';
 
+/**
+ * Handle POST requests to remove the current user from a brain session by validating the request body and session, then proxying the leave action to the backend.
+ *
+ * Valid observable behaviors:
+ * - If the request JSON does not include `brainId`, responds with status 400 and code `BRAIN_ID_REQUIRED`.
+ * - If there is no authenticated session user or no JWT in the session, responds with status 401 and code `TOKEN_NOT_FOUND`.
+ * - Forwards a POST to the backend endpoint for leaving the specified brain; if the backend responds with a non-ok status, returns the backend error JSON with the same HTTP status.
+ * - On unexpected errors, responds with status 500 and code `INTERNAL_ERROR`.
+ *
+ * @param request - Incoming HTTP request whose JSON body must contain a `brainId` property.
+ * @returns The backend success JSON on success, or an error JSON object containing `status`, `code`, `message`, and `data` on validation, backend failure, or internal error.
+ */
 export async function POST(request) {
   try {
     const { brainId } = await request.json();

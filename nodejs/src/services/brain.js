@@ -546,6 +546,11 @@ async function getShareBrains(req) {
     }
 }
 
+/**
+ * Retrieve the sharing status for a list of brain references.
+ * @param {Array<Object>} brains - Array of objects each containing a nested `brain.id` property to identify the brain.
+ * @returns {Array<Object>} Array of records with `_id` and `isShare` for the brains whose IDs were found.
+ */
 async function getBrainStatus(brains) {
     try {
         return Brain.find({ _id: { $in: brains.filter(ele => ele?.brain?.id).map(ele => ele.brain.id) } }, { _id: 1, isShare: 1 });
