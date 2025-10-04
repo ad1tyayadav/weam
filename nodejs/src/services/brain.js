@@ -554,6 +554,42 @@ async function getBrainStatus(brains) {
     }
 }
 
+const leaveBrain = async (req) => {
+    try {
+        const { id: brainId } = req.params;
+        const userId = req.user.id;
+
+        const brain = await Brain.findById(brainId);
+        if (!brain) {
+            throw new Error(_localize('module.notFound', req, 'Brain'));
+        }
+
+        if (brain.user.id.toString() === userId) {
+            throw new Error(_localize('brain.creatorCannotLeave', req));
+        }
+
+        const shareBrain = await ShareBrain.findOne({ 
+            'brain.id': brainId, 
+            'user.id': userId 
+        });
+
+        if (!shareBrain) {
+            throw new Error(_localize('brain.notMember', req));
+        }
+
+        await ShareBrain.deleteOne({ 
+            'brain.id': brainId, 
+            'user.id': userId 
+        });
+
+        await removeBrainChatMember(brainId, userId);
+
+        return { message: 'Successfully left the brain' };
+    } catch (error) {
+        handleError(error, 'Error - leaveBrain');
+    }
+}
+
 module.exports = {
     createBrain,
     updateBrain,
@@ -576,5 +612,6 @@ module.exports = {
     getBrainStatus,
     getGeneralBrain,
     defaultGeneralBrainMember,
+    leaveBrain
 
 }

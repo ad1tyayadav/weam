@@ -121,6 +121,15 @@ const workspaceWiseList = catchAsync(async (req, res) => {
     return util.recordNotFound(null, res);
 })
 
+const leaveBrain = catchAsync(async (req, res) => {
+    const result = await brainService.leaveBrain(req);
+    if (result) {
+        res.message = _localize('module.leave', req, BRAIN);
+        return util.successResponse(result, res);
+    }
+    return util.failureResponse(_localize('module.leaveError', req, BRAIN), res);
+})
+
 module.exports = {
     createBrain,
     updateBrain,
@@ -134,6 +143,7 @@ module.exports = {
     getAllBrainUser,
     restoreBrain,
     deleteAllBrain,
-    workspaceWiseList
+    workspaceWiseList,
+    leaveBrain
 } 
 

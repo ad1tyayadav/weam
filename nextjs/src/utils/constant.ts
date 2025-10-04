@@ -82,6 +82,7 @@ export const MODULE_ACTIONS = {
     EXPORT: 'export',
     SIGNUP: 'register',
     SEND_MAIL: 'sendMail',
+    LEAVE: 'leave',
     FORGOT_PASSWORD: 'forgotPassword',
     RESET_PASSWORD: 'resetPassword',
     SEND_MAIL_NOTIFICATION: 'sendMailNotification',
