@@ -18,5 +18,6 @@ router.post('/share-doc', validate(shareDocKeys), authentication, brainControlle
 router.post('/share/list', authentication, checkPromptLimit, brainController.shareList);
 router.post('/restore/:id', authentication, brainController.restoreBrain);
 router.post('/list-all', authentication, checkPromptLimit, brainController.workspaceWiseList);
+router.post('/:id/leave', authentication, brainController.leaveBrain);
  
 module.exports = router;

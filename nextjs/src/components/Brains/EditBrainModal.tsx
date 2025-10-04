@@ -27,9 +27,10 @@ import { useTeams } from '@/hooks/team/useTeams';
 import GroupIcon from '@/icons/GroupIcon';
 import RemoveIcon from '@/icons/RemoveIcon';
 import useServerAction from '@/hooks/common/useServerActions';
-import { addBrainMemberAction, deleteBrainAction, deleteShareTeamToBrainAction, removeBrainMemberAction, shareTeamToBrainAction, updateBrainAction } from '@/actions/brains';
+import { addBrainMemberAction, deleteBrainAction, deleteShareTeamToBrainAction, leaveBrainAction, removeBrainMemberAction, shareTeamToBrainAction, updateBrainAction } from '@/actions/brains';
 import Toast from '@/utils/toast';
 import ExitIcon from '@/icons/ExitIcon';
+import LeaveBrainButton from './LeaveBrainButton';
 
 const AddNewMemberModal = ({
     brain,
@@ -70,7 +71,7 @@ const AddNewMemberModal = ({
         const response = await addBrainMember(brain?._id, members, brain?.workspaceId);
         Toast(response?.message);
         onClose();
-        if(response) refetchMemebrs();
+        if (response) refetchMemebrs();
         setMemberOptions([]);
     };
 
@@ -164,7 +165,7 @@ const AddTeamMemberModal = ({
     open,
     refetchTeams,
     brainAddedTeam,
-}:any) => {
+}: any) => {
     const { handleSubmit, errors, control, setFormValue, reset } = useBrains({
         addTeam: true,
     });
@@ -185,12 +186,12 @@ const AddTeamMemberModal = ({
         Toast(response?.message);
         onClose();
         setTeamOptions([]);
-        if(response) refetchTeams();
+        if (response) refetchTeams();
     };
 
     useEffect(() => {
         reset();
-        if(open){
+        if (open) {
             getTeams({ search: '', pagination: false });
         }
     }, [open]);
@@ -296,19 +297,17 @@ const AddTeamMemberModal = ({
     );
 };
 
-const AboutBrainDetails = ({ brain, isOwner, onLeaveBrain, onDeleteBrain }: any) => {
+const AboutBrainDetails = ({ brain, isOwner, onDeleteBrain }: any) => {
     return (
         <div className="h-full w-full">
-            {/* Leave Chat Start*/}
             {!isOwner && (
-                <div
-                    onClick={onLeaveBrain}
-                    className="text-font-14 text-red cursor-pointer flex items-center gap-x-1"
-                >
-                    <ExitIcon width={14} height={14} className="fill-red md:w-4 w-5 h-auto" />
-                    <span className='hidden md:inline'>Leave Brain</span>
-                </div>
+                <LeaveBrainButton
+                    brainId={brain._id}
+                    brainTitle={brain.title}
+                    buttonClassName="text-font-14"
+                />
             )}
+
             {isOwner && (
                 <div className="text-red text-font-14 cursor-pointer flex items-center gap-x-1">
                     <DeleteDialog
@@ -321,7 +320,6 @@ const AboutBrainDetails = ({ brain, isOwner, onLeaveBrain, onDeleteBrain }: any)
                     />
                 </div>
             )}
-            {/* Leave Chat End*/}
         </div>
     );
 };
@@ -360,13 +358,13 @@ const MemberItem = ({
             </div>
 
             <div className="flex items-center space-x-2.5">
-            
+
                 {member.role == ROLE_TYPE.OWNER && (
                     <span className="bg-ligheter text-b2 text-xs font-medium me-2 px-2.5 py-0.5 rounded text-font-14">
                         {member.role}
                     </span>
                 )}
-                
+
                 {(isRemoval && member.role != ROLE_TYPE.OWNER) && (
                     <span className='cursor-pointer' onClick={() =>
                         handleRemoveMember(member.user.id)
@@ -385,8 +383,8 @@ const TeamItem = ({ team, handleRemoveTeam, brain }): any => {
     return (
         <div className="group/item user-item flex justify-between py-1.5 px-0 border-b border-b11">
             <div className="user-img-name flex items-center">
-            <span className='w-[35px] h-[35px] rounded-full bg-b11 p-1.5 mr-2.5'>
-            <GroupIcon width={35} height={35} className="fill-b5 w-full h-auto" />
+                <span className='w-[35px] h-[35px] rounded-full bg-b11 p-1.5 mr-2.5'>
+                    <GroupIcon width={35} height={35} className="fill-b5 w-full h-auto" />
                 </span>
                 <p className="m-0 text-font-14 leading-[22px] font-normal text-b2">
                     {team.teamName}
@@ -397,7 +395,7 @@ const TeamItem = ({ team, handleRemoveTeam, brain }): any => {
             </div>
             <div className="flex items-center space-x-2.5 text-font-14">
                 {
-                      <span className='cursor-pointer' onClick={() =>
+                    <span className='cursor-pointer' onClick={() =>
                         handleRemoveTeam(team?.id?._id)
                     }>
                         <RemoveIcon width={14} height={14} className={"size-4 fill-b4 hover:fill-red"} />
@@ -408,7 +406,7 @@ const TeamItem = ({ team, handleRemoveTeam, brain }): any => {
     );
 };
 
-const EditBrainModal = ({ open, closeModal, brain }):any => {
+const EditBrainModal = ({ open, closeModal, brain }): any => {
     const currentUser = getCurrentUser();
     const isOwner = currentUser?._id == brain?.user?.id;
 
@@ -459,11 +457,11 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
                     role: ROLE_TYPE.ADMIN,
                 },
                 ...brainMembers,
-            ].filter((m) => {return regex.test(m.user.email) && m.role!=ROLE_TYPE.ADMIN})
+            ].filter((m) => { return regex.test(m.user.email) && m.role != ROLE_TYPE.ADMIN })
         );
 
-       
-        setTeamList(brainAddedTeam?.filter((currTeam)=>regex.test(currTeam.id.teamName)))
+
+        setTeamList(brainAddedTeam?.filter((currTeam) => regex.test(currTeam.id.teamName)))
     }, [filter]);
 
     const refetchMemebrs = () => {
@@ -487,7 +485,7 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
         refetchMemebrs();
     };
 
-    const handleRemoveTeam = async(value) => {
+    const handleRemoveTeam = async (value) => {
         const response = await deleteShareTeamToBrain(
             brain?.workspaceId,
             brain?.companyId,
@@ -498,7 +496,7 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
         refetchTeams();
     };
 
-    const onLeaveBrain = () => {};
+    const onLeaveBrain = () => { };
 
     const onDeleteBrain = async () => {
         const data = {
@@ -509,8 +507,8 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
         Toast(response?.message);
         closeModal();
     };
-    
-  const handleUpdateCustomInstruction = async () => {
+
+    const handleUpdateCustomInstruction = async () => {
         const data = {
             title: brain.title,
             customInstruction,
@@ -528,20 +526,20 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
         setIsEditingInstruction(false);
     };
 
-    const totalMembers = (brainAddedTeam,  memberList ) => {
-    
-            if(brainAddedTeam?.length){
+    const totalMembers = (brainAddedTeam, memberList) => {
 
-                return brainAddedTeam?.reduce((acc, currTeam) => {
-                    acc += currTeam?.id?.teamUsers?.length || 0;
-                    return acc;
-                }, 0) + memberList?.length
-            }
-            else{
-                return memberList.length
-            }
-        
-        
+        if (brainAddedTeam?.length) {
+
+            return brainAddedTeam?.reduce((acc, currTeam) => {
+                acc += currTeam?.id?.teamUsers?.length || 0;
+                return acc;
+            }, 0) + memberList?.length
+        }
+        else {
+            return memberList.length
+        }
+
+
     };
 
     useEffect(() => {
@@ -569,21 +567,21 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
                                 />
                                 {brain.title}
                             </DialogTitle>
-                          <div className='flex items-center'>
-                          <DialogDescription className="small-description text-font-14 max-md:text-font-12 leading-[24px] text-b5 font-normal ml-9">
-                                        <span className='mr-0.5'>Created By: </span>
-                                        {`${displayName(brain?.user)} on ${dateDisplay(
-                                            brain?.createdAt
-                                        )}`}
-                            </DialogDescription>
-                            <div className="ml-auto">
-                                <AboutBrainDetails
-                                    brain={brain}
-                                    isOwner={isOwner}
-                                    onLeaveBrain={onLeaveBrain}
-                                    onDeleteBrain={onDeleteBrain}
-                                />
-                            </div>
+                            <div className='flex items-center'>
+                                <DialogDescription className="small-description text-font-14 max-md:text-font-12 leading-[24px] text-b5 font-normal ml-9">
+                                    <span className='mr-0.5'>Created By: </span>
+                                    {`${displayName(brain?.user)} on ${dateDisplay(
+                                        brain?.createdAt
+                                    )}`}
+                                </DialogDescription>
+                                <div className="ml-auto">
+                                    <AboutBrainDetails
+                                        brain={brain}
+                                        isOwner={isOwner}
+                                        onLeaveBrain={onLeaveBrain}
+                                        onDeleteBrain={onDeleteBrain}
+                                    />
+                                </div>
                             </div>
                         </DialogHeader>
 
@@ -634,137 +632,137 @@ const EditBrainModal = ({ open, closeModal, brain }):any => {
                                     </div>
                                 )}
                             </div>
-                                    
+
                             {brain.isShare && (
-                                <>                                
-                                <div className="flex w-full py-3 gap-3 md:flex-row flex-col">
-                                    <div className="search-wrap search-member relative flex-1 w-full">
-                                        <input
-                                            type="text"
-                                            className="default-form-input default-form-input-border-light default-form-input-md"
-                                            id="searchMember"
-                                            placeholder="Search Member"
-                                            onChange={(e) => {
-                                                setTimeout(() => {
-                                                    setFilter({
-                                                        ...filter,
-                                                        search: e.target
-                                                            .value,
-                                                    });
-                                                }, 1000);
-                                            }}
-                                        />
-                                        <span className="inline-block absolute left-[15px] top-1/2 -translate-y-1/2 [&>svg]:fill-b7">
-                                            <SearchIcon className="w-4 h-[17px] fill-b7" />
+                                <>
+                                    <div className="flex w-full py-3 gap-3 md:flex-row flex-col">
+                                        <div className="search-wrap search-member relative flex-1 w-full">
+                                            <input
+                                                type="text"
+                                                className="default-form-input default-form-input-border-light default-form-input-md"
+                                                id="searchMember"
+                                                placeholder="Search Member"
+                                                onChange={(e) => {
+                                                    setTimeout(() => {
+                                                        setFilter({
+                                                            ...filter,
+                                                            search: e.target
+                                                                .value,
+                                                        });
+                                                    }, 1000);
+                                                }}
+                                            />
+                                            <span className="inline-block absolute left-[15px] top-1/2 -translate-y-1/2 [&>svg]:fill-b7">
+                                                <SearchIcon className="w-4 h-[17px] fill-b7" />
+                                            </span>
+                                        </div>
+                                        {/* Add Member start */}
+                                        {((currentUser.roleCode ===
+                                            ROLE_TYPE.USER &&
+                                            brain?.user?.id ===
+                                            currentUser._id) ||
+                                            currentUser.roleCode !==
+                                            ROLE_TYPE.USER) && (
+
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <div>
+                                                            <span
+                                                                className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
+                                                                onClick={() =>
+                                                                    setAddMemberModal(
+                                                                        true
+                                                                    )
+                                                                }
+                                                            >
+                                                                <AddUser
+                                                                    width={
+                                                                        16
+                                                                    }
+                                                                    height={
+                                                                        18
+                                                                    }
+                                                                    className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
+                                                                />
+                                                                <span className="text-font-14 font-semibold text-b2">
+                                                                    Add
+                                                                    Member
+                                                                </span>
+                                                            </span>
+
+                                                            <span
+                                                                className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
+                                                                onClick={() =>
+                                                                    setAddTeamModal(
+                                                                        true
+                                                                    )
+                                                                }
+                                                            >
+                                                                <AddTeam
+                                                                    width={
+                                                                        18
+                                                                    }
+                                                                    height={
+                                                                        18
+                                                                    }
+                                                                    className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
+                                                                />
+                                                                <span className="text-font-14 font-semibold text-b2">
+                                                                    Add a Team
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </DialogTrigger>
+                                                </Dialog>
+
+                                            )}
+                                        {/* Add Member End */}
+                                    </div>
+
+                                    <div
+                                        className="font-normal"
+                                    // value="Members"
+                                    >
+                                        Members{' '}
+                                        <span className="ms-1.5 text-font-14 font-bold">
+                                            {totalMembers(
+                                                teamList,
+                                                memberList
+                                            )}
                                         </span>
                                     </div>
-                                    {/* Add Member start */}
-                                    {((currentUser.roleCode ===
-                                        ROLE_TYPE.USER &&
-                                        brain?.user?.id ===
-                                            currentUser._id) ||
-                                        currentUser.roleCode !==
-                                            ROLE_TYPE.USER) && (
-                                
-                                        <Dialog>
-                                            <DialogTrigger asChild>
-                                                <div>
-                                                    <span
-                                                        className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
-                                                        onClick={() =>
-                                                            setAddMemberModal(
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        <AddUser
-                                                            width={
-                                                                16
-                                                            }
-                                                            height={
-                                                                18
-                                                            }
-                                                            className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
-                                                        />
-                                                        <span className="text-font-14 font-semibold text-b2">
-                                                            Add
-                                                            Member
-                                                        </span>
-                                                    </span>
-                                
-                                                    <span
-                                                        className="inline-flex items-center cursor-pointer mr-1 px-3 py-2 rounded-md bg-white border border-b8 hover:bg-b11 transition ease-in-out duration-150 md:mb-0 mb-1"
-                                                        onClick={() =>
-                                                            setAddTeamModal(
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        <AddTeam
-                                                            width={
-                                                                18
-                                                            }
-                                                            height={
-                                                                18
-                                                            }
-                                                            className="w-[26px] h-[18px] object-contain fill-b5 mr-1"
-                                                        />
-                                                        <span className="text-font-14 font-semibold text-b2">
-                                                            Add a Team
-                                                        </span>
-                                                    </span>
-                                                </div>
-                                            </DialogTrigger>
-                                        </Dialog>
-                                        
-                                    )}
-                                {/* Add Member End */}
-                                </div>
 
-                                <div
-                                    className="font-normal"
-                                    // value="Members"
-                                >
-                                    Members{' '}
-                                    <span className="ms-1.5 text-font-14 font-bold">
-                                        {totalMembers(
-                                            teamList,
-                                            memberList
-                                        )}
-                                    </span>
-                                </div>
+                                    <div className="overflow-y-auto w-full max-h-[65vh]">
 
-                                <div className="overflow-y-auto w-full max-h-[65vh]">
-                                
-                                    {/* Member List Start */}
-                                    <div className="user-lists h-full w-full mt-2.5">
-                                        {memberList?.map((nm) => (
-                                            <MemberItem
-                                                key={nm._id}
-                                                member={nm}
-                                                handleRemoveMember={
-                                                    handleRemoveMember
-                                                }
-                                                isOwner={isOwner}
-                                                currentUser={
-                                                    currentUser
-                                                }
-                                                brain={brain}
-                                            />
-                                        ))}
-                                        {teamList?.map((team) => (
-                                            <TeamItem
-                                                key={team.id._id}
-                                                team={team}
-                                                handleRemoveTeam={
-                                                    handleRemoveTeam
-                                                }
-                                                brain={brain}
-                                            />
-                                        ))}
+                                        {/* Member List Start */}
+                                        <div className="user-lists h-full w-full mt-2.5">
+                                            {memberList?.map((nm) => (
+                                                <MemberItem
+                                                    key={nm._id}
+                                                    member={nm}
+                                                    handleRemoveMember={
+                                                        handleRemoveMember
+                                                    }
+                                                    isOwner={isOwner}
+                                                    currentUser={
+                                                        currentUser
+                                                    }
+                                                    brain={brain}
+                                                />
+                                            ))}
+                                            {teamList?.map((team) => (
+                                                <TeamItem
+                                                    key={team.id._id}
+                                                    team={team}
+                                                    handleRemoveTeam={
+                                                        handleRemoveTeam
+                                                    }
+                                                    brain={brain}
+                                                />
+                                            ))}
+                                        </div>
+                                        {/* Member List End */}
                                     </div>
-                                    {/* Member List End */}
-                                </div>
                                 </>
                             )}
                         </div>

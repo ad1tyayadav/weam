@@ -264,3 +264,32 @@ export const addDefaultBrainAction = async (workspaceId: string, companyId: stri
 
     return response;
 }
+
+export const leaveBrainAction = async (brainId: string) => {
+  try {
+    console.log('LEAVE BRAIN ACTION STARTED');
+    console.log('Brain ID:', brainId);
+    
+    const response = await fetch('/api/brain/leave', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ brainId }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      throw new Error(errorData.message || `Server returned ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('Leave brain success:', result);
+    return result;
+    
+  } catch (error: any) {
+    console.error('Leave brain action failed:', error);
+    throw new Error(error.message || 'Failed to leave brain');
+  }
+};

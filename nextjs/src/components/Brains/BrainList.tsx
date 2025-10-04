@@ -36,6 +36,7 @@ import { SetUserData } from '@/types/user';
 import { chatMemberListAction } from '@/lib/slices/chat/chatSlice';
 import { generateObjectId } from '@/utils/helper';
 import Link from 'next/link';
+import LeaveBrainButton from './LeaveBrainButton';
 
 type DefaultEditOptionProps = {
     onEdit: () => void;
@@ -49,6 +50,7 @@ type CommonListProps = {
     key?: string;
     currentUser: SetUserData;
     closeSidebar: () => void;
+    onBrainLeave?: (brainId: string) => void;
 }
 
 type LinkItemsProps = {
@@ -182,7 +184,7 @@ const DefaultEditOption = React.memo(
     }
 );
 
-export const CommonList = ({ b, key, currentUser, closeSidebar }: CommonListProps) => {
+export const CommonList = ({ b, key, currentUser, closeSidebar, onBrainLeave }: CommonListProps) => {
     
     const dispatch = useDispatch();
     const router = useRouter();
@@ -203,6 +205,8 @@ export const CommonList = ({ b, key, currentUser, closeSidebar }: CommonListProp
         () => (b?._id === brainId),
         [b?._id, brainId]
     );
+
+    const isOwner = b.user.id === currentUser._id;
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -294,9 +298,8 @@ export const CommonList = ({ b, key, currentUser, closeSidebar }: CommonListProp
     return (
         <>
             <button
-                className={`${
-                    isActive ? 'active' : ''
-                } group relative flex w-full items-center py-1.5 px-2 text-left transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none rounded-custom [&.active]:bg-b12 cursor-pointer`}
+                className={`${isActive ? 'active' : ''
+                    } group relative flex w-full items-center py-1.5 px-2 text-left transition [overflow-anchor:none] hover:z-[2] focus:z-[3] focus:outline-none rounded-custom [&.active]:bg-b12 cursor-pointer`}
                 onClick={() => {
                     handleNewChatClick();
                     closeSidebar();
@@ -331,17 +334,34 @@ export const CommonList = ({ b, key, currentUser, closeSidebar }: CommonListProp
                         <CheckIcon className="size-4 object-contain fill-b6" />
                     </button>
                 ) : null}
+
+                {/* Show options for non-default, non-general brains */}
                 {b?.slug != `default-brain-${currentUser?._id}` &&
-                    b?.slug !== GENERAL_BRAIN_SLUG &&
-                    ((currentUser?.roleCode === ROLE_TYPE.USER &&
-                        b.user.id === currentUser?._id) ||
-                        currentUser?.roleCode !== ROLE_TYPE.USER) && (
-                        <DefaultEditOption
-                            onEdit={handleEditClick}
-                            handleEditBrain={() => handleEditBrain(b)}
-                            handleDeleteBrain={() => handleDeleteBrain(b)}
-                            isDeletePending={isDeletePending}
-                        />
+                    b?.slug !== GENERAL_BRAIN_SLUG && (
+                        <>
+                        {currentUser?.roleCode === ROLE_TYPE.USER && !isOwner && (
+                            <div onClick={(e) => e.stopPropagation()}>
+                                <LeaveBrainButton
+                                    brainId={b._id}
+                                    brainTitle={b.title}
+                                    buttonClassName="ml-auto md:opacity-0 group-hover:opacity-100 dropdown-action transparent-ghost-btn btn-round btn-round-icon"
+                                    iconClassName="w-5 h-auto md:w-4"
+                                    hideLabel={true}
+                                    onLeaveSuccess={onBrainLeave}
+                                />
+                            </div>
+                        )}
+
+                            {((currentUser?.roleCode === ROLE_TYPE.USER && isOwner) ||
+                                currentUser?.roleCode !== ROLE_TYPE.USER) && (
+                                    <DefaultEditOption
+                                        onEdit={handleEditClick}
+                                        handleEditBrain={() => handleEditBrain(b)}
+                                        handleDeleteBrain={() => handleDeleteBrain(b)}
+                                        isDeletePending={isDeletePending}
+                                    />
+                                )}
+                        </>
                     )}
             </button>
         </>
