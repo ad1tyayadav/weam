@@ -584,7 +584,11 @@ const leaveBrain = async (req) => {
 
         await removeBrainChatMember(brainId, userId);
 
-        return { message: 'Successfully left the brain' };
+        return { 
+            status: 200,
+            message: _localize('module.leave', req, 'Brain'),
+            data: {}
+        };
     } catch (error) {
         handleError(error, 'Error - leaveBrain');
     }

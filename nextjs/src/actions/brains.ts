@@ -266,30 +266,33 @@ export const addDefaultBrainAction = async (workspaceId: string, companyId: stri
 }
 
 export const leaveBrainAction = async (brainId: string) => {
-  try {
-    console.log('LEAVE BRAIN ACTION STARTED');
-    console.log('Brain ID:', brainId);
-    
-    const response = await fetch('/api/brain/leave', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ brainId }),
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('API Error:', errorData);
-      throw new Error(errorData.message || `Server returned ${response.status}`);
-    }
-    
-    const result = await response.json();
-    console.log('Leave brain success:', result);
-    return result;
-    
-  } catch (error: any) {
-    console.error('Leave brain action failed:', error);
-    throw new Error(error.message || 'Failed to leave brain');
+  const sessionUser = await getSessionUser();
+  
+  if (!brainId) {
+    return {
+      status: 400,
+      code: 'BRAIN_ID_REQUIRED',
+      message: '',
+      data: {}
+    };
   }
+
+  if (!sessionUser?._id) {
+    return {
+      status: 401,
+      code: 'TOKEN_NOT_FOUND',
+      message: '',
+      data: {}
+    };
+  }
+
+  const response = await serverApi({
+    action: MODULE_ACTIONS.UNSHARE,
+    parameters: [brainId],
+    data: { user_id: sessionUser._id }
+  });
+
+  await revalidateTagging(response, `${REVALIDATE_TAG_NAME.BRAIN}-${sessionUser.companyId}`);
+  
+  return response;
 };
