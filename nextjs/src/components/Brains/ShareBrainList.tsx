@@ -47,7 +47,7 @@ const ShareBrainList = ({ brainList, workspaceFirst }: ShareBrainListProps) => {
     }
 
     const selectedWorkSpaceBrainList = brainList.find(
-        (brain) => brain._id.toString() === selectedWorkSpace._id.toString()
+        (brain) => brain._id.toString() === selectedWorkSpace?._id?.toString()
     );
 
     if (!selectedWorkSpaceBrainList) {

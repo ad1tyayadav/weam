@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const brainController = require('../../controller/web/brainController');
-const { createBrainKeys, updateBrainKeys, shareBrainKeys, unshareBrainKeys, shareDocKeys } = require('../../utils/validations/brain');
+const { createBrainKeys, updateBrainKeys, shareBrainKeys, unshareBrainKeys, shareDocKeys, convertToSharedKeys } = require('../../utils/validations/brain');
 const { partialUpdateKeys } = require('../../utils/validations/common');
 const { authentication } = require('../../middleware/authentication');
 const { checkPromptLimit } = require('../../middleware/promptlimit');
