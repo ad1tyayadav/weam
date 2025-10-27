@@ -100,6 +100,7 @@ export const MODULE_ACTIONS = {
     DELETE_S3_MEDIA : 'deleteS3Media',
     FORK_CHAT: 'forkChat',
     INVITE_LOGIN: 'inviteLogin',
+    IMPORT_UPLOAD: 'upload',
     SHARE: 'share',
     SHARE_LIST: 'shareList',
     UNSHARE: 'unshare',
@@ -134,6 +135,10 @@ export const MODULE_ACTIONS = {
     HUGGING_FACE_HEALTH: 'huggingFaceKeyCheck',
     ANTHROPIC_HEALTH: 'anthropicKeyCheck',
     CHECK_GEMINI_API_KEY: 'geminiKeyCheck',
+    OLLAMA_HEALTH: 'ollamaKeyCheck',
+    SAVE_OLLAMA_SETTINGS: 'saveOllamaSettings',
+    OLLAMA_PULL_MODEL: 'ollamaPullModel',
+    OLLAMA_LIST_TAGS: 'ollamaListTags',
     BRAIN_LIST_ALL: 'brainListAll',
     GET_MESSAGE_CREDITS: 'getMessageCredits',
     FAVORITE_LIST: 'userFavoriteList',
@@ -165,7 +170,8 @@ export const MODULE_ACTIONS = {
     GET_ALL_PAGES: 'getAllPages',
     SOLUTION_INSTALL: 'solutionInstall',
     ENHANCE_PROMPT_BY_LLM: 'enhancePromptByLLM',
-
+    GET_IMAGES: 'getImages',
+    CONVERT_TO_SHARED: 'convertToShared',
 } as const;
 
 export const DATE_TIME_FORMAT = 'DD/MM/YYYY hh:mm A';
@@ -174,7 +180,12 @@ export const PASSWORD_REGEX_MESSAGE = 'Your password must contain at least one u
 export const EMAIL_REGEX_MESSAGE = 'Please enter your email address.';
 export const ALREADY_PRESENT_EMAIL_MESSAGE = 'Email already exist';
 export const STORAGE_INCREASE_REQUEST = 'Storage request received. Admin will contact you soon.'; 
-export const BRAIN_MEMBER_ADDED = 'Member has been successfully added to the brain'; 
+export const BRAIN_MEMBER_ADDED = 'Member has been successfully added to the brain';
+export const BRAIN_ID_REQUIRED = 'Brain ID is required';
+export const LEAVE_BRAIN_SUCCESS = 'You have successfully left the brain';
+export const LEAVE_BRAIN_ERROR = 'Unable to leave the brain. Please try again';
+export const CONVERT_TO_SHARED_SUCCESS = 'Brain converted to shared successfully';
+export const CONVERT_TO_SHARED_ERROR = 'Unable to convert brain to shared. Please try again'; 
 export const FILE_SIZE_MESSAGE = 'Please upload less than 5 MB file'; 
 export const PROFILE_IMG_SIZE_MESSAGE = 'Please upload less than 500 KB file'; 
 export const API_KEY_MESSAGE = 'API key is required'; 
